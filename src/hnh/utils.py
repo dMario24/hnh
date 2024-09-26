@@ -7,16 +7,14 @@ def get_max_score(p):
           max_label = item['label']
   return max_label
 
-
 def get_score(item):
   return item['score']
 
-
 def get_max_score2(p):
   max_p = max(p, key=get_score)
-  return max_p
-
+  return max_p['label']
 
 def get_max_score3(p):
   max_p = max(p, key=lambda x: x['score'])
-  return max_p
+  print(max_p)
+  return max_p['label']
