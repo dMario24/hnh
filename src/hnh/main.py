@@ -1,9 +1,10 @@
 from typing import Union
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
-
 import random
+from transformers import pipeline
+import io
 
 app = FastAPI()
 
@@ -23,6 +24,23 @@ async def home(request: Request):
 
 @app.get("/predict")
 def hotdog():
-    
+    model = pipeline("image-classification", model="julien-c/hotdog-not-hotdog") 
     return {"Hello": random.choice(["hotdog", "not hotdog"])}
+
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    # 파일 저장
+    img = await file.read()
+    model = pipeline("image-classification", model="julien-c/hotdog-not-hotdog")
+    
+    from PIL import Image
+    img = Image.open(io.BytesIO(img))  # 이미지 바이트를 PIL 이미지로 변환
+    
+    p = model(img)
+    #{'label': 'hot dog', 'score': 0.54},
+    #{'label': 'not hot dog', 'score': 0.46}
+
+    return {"Hello": p}
+
 
